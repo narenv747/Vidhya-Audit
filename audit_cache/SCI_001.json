@@ -1,0 +1,228 @@
+{
+  "script_id": "SCI_001",
+  "cover": {
+    "image": null,
+    "rows": [],
+    "recorded_total": null,
+    "computed_total": 0,
+    "total_bbox": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "missing": true
+  },
+  "findings": [
+    {
+      "id": "f1",
+      "type": "omission",
+      "severity": "medium",
+      "page": 1,
+      "q": "1a",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f2",
+      "type": "omission",
+      "severity": "medium",
+      "page": 5,
+      "q": "5",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f3",
+      "type": "omission",
+      "severity": "medium",
+      "page": 6,
+      "q": "6",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f4",
+      "type": "omission",
+      "severity": "medium",
+      "page": 7,
+      "q": "7",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f5",
+      "type": "omission",
+      "severity": "medium",
+      "page": 8,
+      "q": "8",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f6",
+      "type": "omission",
+      "severity": "medium",
+      "page": 11,
+      "q": "11",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f7",
+      "type": "omission",
+      "severity": "medium",
+      "page": 16,
+      "q": "16",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f8",
+      "type": "omission",
+      "severity": "medium",
+      "page": 18,
+      "q": "18",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f9",
+      "type": "omission",
+      "severity": "medium",
+      "page": 19,
+      "q": "19",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f10",
+      "type": "omission",
+      "severity": "medium",
+      "page": 24,
+      "q": "24",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f11",
+      "type": "omission",
+      "severity": "medium",
+      "page": 25,
+      "q": "25",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f12",
+      "type": "omission",
+      "severity": "medium",
+      "page": 28,
+      "q": "28",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f13",
+      "type": "omission",
+      "severity": "medium",
+      "page": 29,
+      "q": "29",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    },
+    {
+      "id": "f14",
+      "type": "omission",
+      "severity": "medium",
+      "page": 32,
+      "q": "32",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    }
+  ]
+}

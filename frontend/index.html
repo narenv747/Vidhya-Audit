@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Vidya-Audit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Hanken+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#080d19;--panel:#0d1424;--panel2:#14203a;--line:#1d2a47;--txt:#e8edfb;--mut:#8a98bb;--red:#ff4d5e;--yel:#ffc53d;--grn:#2fd18b;--acc:#6ea8ff;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--txt);font:14px/1.45 "Hanken Grotesk",system-ui,sans-serif;display:flex;flex-direction:column}
+h1,h2{font-family:Fraunces,Georgia,serif;font-weight:600;margin:0}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+ul{list-style:none;margin:0;padding:0}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+header{display:flex;align-items:center;gap:18px;padding:12px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+h1{font-size:23px}
+.tag{color:var(--mut)}
+.sum{margin-left:auto;color:var(--txt);font-weight:500}
+.mode{color:var(--mut)}
+.mode.demo{color:var(--yel)}
+main{flex:1;min-height:0;display:grid;grid-template-columns:250px minmax(0,1fr) 360px}
+aside{overflow:auto;padding:14px 16px;background:var(--panel)}
+#left{border-right:1px solid var(--line)}
+#right{border-left:1px solid var(--line)}
+h2{font-size:17px;margin:6px 0 10px}
+.sc{display:flex;gap:11px;align-items:center;width:100%;padding:9px 10px;border-radius:6px;text-align:left}
+.sc:hover{background:#101a30}
+.sc.cur{background:var(--panel2)}
+.sc small{display:block;color:var(--mut)}
+.dot{width:10px;height:10px;border-radius:50%;flex:none;background:#3a4766}
+.dot.red{background:var(--red);box-shadow:0 0 10px var(--red)}
+.dot.yellow{background:var(--yel);box-shadow:0 0 10px var(--yel)}
+.dot.green{background:var(--grn);box-shadow:0 0 8px var(--grn)}
+#mid{display:flex;flex-direction:column;min-width:0;background:radial-gradient(900px 500px at 50% 40%,#101b36,var(--bg))}
+.pages{display:flex;gap:6px;overflow-x:auto;padding:10px 14px}
+.chip{position:relative;flex:none;min-width:36px;padding:4px 10px;border-radius:14px;border:1px solid var(--line);color:var(--mut)}
+.chip.cur{color:#fff;border-color:var(--acc);background:var(--panel2)}
+.chip i{position:absolute;top:-3px;right:-2px;width:9px;height:9px;border-radius:50%}
+.chip i.red{background:var(--red);box-shadow:0 0 8px var(--red)}
+.chip i.yellow{background:var(--yel);box-shadow:0 0 8px var(--yel)}
+#stage{flex:1;min-height:320px;position:relative}
+#cv{display:block;width:100%;height:100%}
+#tip{position:absolute;pointer-events:none;max-width:280px;padding:7px 10px;border-radius:6px;background:#050912;border:1px solid var(--line);display:none;font-size:13px}
+.nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px;border-top:1px solid var(--line)}
+.nav button{padding:6px 14px;border:1px solid var(--line);border-radius:6px}
+.nav button:hover{background:var(--panel2)}
+.muted{color:var(--mut)}
+.err{color:var(--red)}
+.tot{display:flex;gap:22px;align-items:baseline;margin:6px 0 4px}
+.tot span{display:block;color:var(--mut);font-size:13px}
+.tot b{font:600 28px Fraunces,Georgia,serif}
+.tot .rec b{color:var(--yel)}
+.tot .cmp b{color:var(--grn)}
+.cover{padding-bottom:14px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.f{--c:var(--red);padding:12px 0 12px 10px;border-bottom:1px solid var(--line);border-left:3px solid transparent}
+.f.mm{--c:var(--yel)}
+.f.sel{border-left-color:var(--c);background:linear-gradient(90deg,#14203a55,transparent)}
+.f.done{--c:var(--grn)}
+.f.gone{opacity:.45}
+.fmain{display:flex;gap:10px;align-items:center;width:100%;text-align:left}
+.fmain .dot{background:var(--c);box-shadow:0 0 10px var(--c)}
+.fmain b{display:block;font-weight:700}
+.fmain small{color:var(--mut)}
+.fr{margin:6px 0 4px 20px;color:#c3cde8}
+.acts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0 20px}
+.b{padding:6px 11px;border-radius:5px;border:1px solid var(--line)}
+.b:hover{background:var(--panel2)}
+.b.p{background:var(--c);border-color:var(--c);color:#0a0f1d;font-weight:700}
+.state{margin:8px 0 0 20px;color:var(--mut)}
+.state button{color:var(--acc);text-decoration:underline;margin-left:6px}
+#log li{padding:6px 0;border-bottom:1px solid var(--line);color:#c3cde8}
+#log time{color:var(--mut);margin-right:8px}
+@media(max-width:1000px){body{height:auto}main{display:block}aside{border:0}#mid{height:75vh}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Vidya-Audit</h1>
+  <span class="tag">The AI flags problems. The examiner decides.</span>
+  <span class="sum" id="sum"></span>
+  <span class="mode" id="mode"></span>
+</header>
+<main>
+  <aside id="left"><h2>Answer scripts</h2><ul id="list"></ul></aside>
+  <section id="mid">
+    <div class="pages" id="pages" aria-label="Pages"></div>
+    <div id="stage"><canvas id="cv" role="img" aria-label="Scanned answer page with highlighted findings"></canvas><div id="tip"></div></div>
+    <div class="nav"><button id="prev">Previous page</button><span id="pg" aria-live="polite"></span><button id="next">Next page</button></div>
+  </section>
+  <aside id="right">
+    <div class="cover" id="cover"></div>
+    <h2 id="fh">Findings</h2><ul id="finds"></ul>
+    <h2 style="margin-top:22px">Decision log</h2><ul id="log"><li class="muted">No decisions yet.</li></ul>
+  </aside>
+</main>
+<script>
+const API = new URLSearchParams(location.search).get('api') || 'http://localhost:8000';
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const S = {scripts:[], cur:null, audit:null, page:1, pages:[], decs:{}, log:[], demo:false, sel:null, img:null, boxes:[], tok:0, until:0, raf:0, err:''};
+
+/* ---------- demo data (used only when the backend is not reachable) ---------- */
+const DEMO = {
+  scripts:[{script_id:'DEMO-MATH',pages:4,risk:'red',n_findings:2},{script_id:'DEMO-SCI',pages:3,risk:'yellow',n_findings:1},{script_id:'DEMO-ENG',pages:3,risk:'green',n_findings:0}],
+  audits:{
+    'DEMO-MATH':{script_id:'DEMO-MATH',cover:{image:'page_00.jpg',rows:[{q:'13',marks:4},{q:'14a',marks:2},{q:'14b',marks:null},{q:'15',marks:5}],recorded_total:41,computed_total:37,total_bbox:[.62,.78,.26,.1]},
+      findings:[{id:'f1',type:'total_mismatch',severity:'medium',page:0,q:null,bbox:[.62,.78,.26,.1],confidence:.95,reason:'Recorded 41, rows sum to 37'},
+                {id:'f2',type:'omission',severity:'high',page:3,q:'14b',bbox:[.1,.3,.8,.28],confidence:.87,reason:'Handwritten answer present, no marks or ticks; cover sheet shows no marks for Q14b'}]},
+    'DEMO-SCI':{script_id:'DEMO-SCI',cover:{image:'page_00.jpg',rows:[{q:'1',marks:3},{q:'2',marks:4}],recorded_total:9,computed_total:7,total_bbox:[.62,.78,.26,.1]},
+      findings:[{id:'f1',type:'total_mismatch',severity:'medium',page:0,q:null,bbox:[.62,.78,.26,.1],confidence:.9,reason:'Recorded 9, rows sum to 7'}]},
+    'DEMO-ENG':{script_id:'DEMO-ENG',cover:{image:'page_00.jpg',rows:[{q:'1',marks:3},{q:'2',marks:4}],recorded_total:7,computed_total:7,total_bbox:[.62,.78,.26,.1]},findings:[]}
+  }
+};
+function rng(s){return()=>(s=(s*16807)%2147483647)/2147483647}
+function demoPage(sid,p){
+  const c=document.createElement('canvas');c.width=900;c.height=640;const x=c.getContext('2d'),r=rng(11+p*17+sid.length);
+  x.fillStyle='#f7f5ef';x.fillRect(0,0,900,640);
+  x.strokeStyle='#a9c0e8';x.lineWidth=1;for(let y=70;y<640;y+=28){x.beginPath();x.moveTo(0,y);x.lineTo(900,y);x.stroke()}
+  x.strokeStyle='#d9534f';[70,76].forEach(m=>{x.beginPath();x.moveTo(m,0);x.lineTo(m,640);x.stroke()});
+  x.font='italic 22px "Segoe Script","Bradley Hand",cursive';x.fillStyle='#243b8c';
+  const red='#d6283a';
+  if(p===0){
+    x.fillText('Marks awarded',90,52);
+    DEMO.audits[sid].cover.rows.forEach((w,i)=>{x.fillStyle='#243b8c';x.fillText('Q'+w.q,100,140+i*56);if(w.marks!=null){x.fillStyle=red;x.fillText(String(w.marks),300,140+i*56)}});
+    const a=DEMO.audits[sid].cover;x.fillStyle=red;x.font='bold 30px "Segoe Script","Bradley Hand",cursive';x.fillText('Total '+a.recorded_total,580,545);
+  }else{
+    const hole=sid==='DEMO-MATH'&&p===3;
+    for(let y=104;y<620;y+=28){
+      const inHole=hole&&y>192&&y<371;x.strokeStyle='#243b8c';x.lineWidth=2;x.beginPath();x.moveTo(92,y);
+      let px=92;const len=300+r()*380;while(px<92+len){px+=12;x.lineTo(px,y-4+r()*8)}x.stroke();
+      if(!inHole&&r()>.55){x.strokeStyle=red;x.lineWidth=3;x.beginPath();x.moveTo(820,y-6);x.lineTo(830,y+6);x.lineTo(856,y-18);x.stroke()}
+    }
+    if(hole){x.fillStyle='#243b8c';x.font='italic 22px "Segoe Script","Bradley Hand",cursive';x.fillText('Ans 14(b)',84,216)}
+  }
+  return c;
+}
+
+/* ---------- api ---------- */
+async function api(path,ms=8000){
+  const ac=new AbortController(),t=setTimeout(()=>ac.abort(),ms);
+  try{const r=await fetch(API+path,{signal:ac.signal});if(!r.ok)throw new Error((await r.text()).slice(0,160)||r.status);return await r.json()}
+  finally{clearTimeout(t)}
+}
+
+/* ---------- state helpers ---------- */
+const decs=()=>S.decs[S.cur]||(S.decs[S.cur]={});
+const finds=()=>S.audit?S.audit.findings:[];
+const titleOf=f=>f.type==='total_mismatch'?'Cover total is wrong':(f.q?`Question ${f.q} not graded`:'Answer not graded');
+const pageLabel=p=>p===0?'Cover sheet':'Page '+p;
+function logAct(t){S.log.unshift({t:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}),s:S.cur,m:t});renderLog()}
+
+/* ---------- init + open ---------- */
+async function init(){
+  try{S.scripts=await api('/scripts',4000);S.demo=false}catch(e){S.scripts=DEMO.scripts;S.demo=true}
+  $('#mode').textContent=S.demo?'Demo data, backend not reachable':'Connected to backend';
+  $('#mode').className='mode'+(S.demo?' demo':'');
+  renderList();renderSum();
+  if(S.scripts.length)open(S.scripts[0].script_id);
+  else $('#list').innerHTML='<li class="muted">No scripts found. Add folders to data/ and refresh.</li>';
+}
+async function open(id){
+  S.cur=id;S.audit=null;S.img=null;S.sel=null;renderList();
+  $('#finds').innerHTML='<li class="muted">Auditing this script. A first run can take a minute.</li>';$('#cover').innerHTML='';draw();
+  try{S.audit=S.demo?DEMO.audits[id]:await api('/audit/'+encodeURIComponent(id),180000)}
+  catch(e){$('#finds').innerHTML='<li class="err">Could not audit this script: '+esc(e.message)+'</li>';return}
+  const sc=S.scripts.find(s=>s.script_id===id),start=(S.audit.cover&&S.audit.cover.image)?0:1;
+  S.pages=Array.from({length:sc.pages},(_,i)=>start+i);
+  const first=finds()[0];S.page=first?first.page:S.pages[0];
+  renderPages();renderCover();renderFinds();renderSum();loadPage(S.page);
+  if(first)S.sel=first.id,renderFinds(),kick();
+}
+function goPage(p){if(!S.pages.includes(p))return;S.page=p;renderPages();loadPage(p)}
+function step(d){const i=S.pages.indexOf(S.page)+d;if(i>=0&&i<S.pages.length)goPage(S.pages[i])}
+function select(id){
+  S.sel=id;const f=finds().find(x=>x.id===id);renderFinds();
+  if(f&&f.page!==S.page)goPage(f.page);else kick();
+  const el=document.querySelector(`[data-id="${id}"]`);if(el)el.scrollIntoView({block:'nearest'});
+}
+
+/* ---------- rendering ---------- */
+function renderSum(){
+  const fl=S.scripts.filter(s=>s.risk==='red'||s.risk==='yellow').length;
+  $('#sum').textContent=`${S.scripts.length} scripts, ${fl} flagged`;
+}
+function renderList(){
+  $('#list').innerHTML=S.scripts.map(s=>`<li><button class="sc${s.script_id===S.cur?' cur':''}" data-sid="${esc(s.script_id)}"><i class="dot ${esc(s.risk)}"></i><span>${esc(s.script_id)}<small>${s.pages} pages${s.risk==='unknown'?', not audited yet':', '+s.n_findings+' findings'}</small></span></button></li>`).join('');
+}
+function renderPages(){
+  $('#pages').innerHTML=S.pages.map(p=>{
+    const fs=finds().filter(f=>f.page===p),k=fs.some(f=>f.type==='omission')?'red':(fs.length?'yellow':'');
+    return `<button class="chip${p===S.page?' cur':''}" data-p="${p}" aria-label="${pageLabel(p)}">${p===0?'Cover':p}${k?`<i class="${k}"></i>`:''}</button>`}).join('');
+  const i=S.pages.indexOf(S.page);$('#pg').textContent=`${pageLabel(S.page)}, ${i+1} of ${S.pages.length}`;
+}
+function renderCover(){
+  const c=S.audit&&S.audit.cover;
+  if(!c||!c.image){$('#cover').innerHTML='<h2>Cover total</h2><p class="muted">This script has no cover sheet, so the marks total could not be checked. Answer pages were still audited.</p>';return}
+  const ok=c.recorded_total!=null&&c.recorded_total===c.computed_total;
+  $('#cover').innerHTML=`<h2>Cover total</h2><div class="tot"><div class="rec"><span>Examiner wrote</span><b>${c.recorded_total??'not read'}</b></div><div class="cmp"><span>Rows add up to</span><b>${c.computed_total}</b></div></div><div class="${ok?'muted':'err'}">${ok?'The totals match.':(c.recorded_total==null?'The written total could not be read.':'The totals do not match.')}</div>`;
+}
+function renderFinds(){
+  const d=decs(),open=finds().filter(f=>!d[f.id]).length;
+  $('#fh').textContent=`Findings (${open} open)`;
+  if(!finds().length){$('#finds').innerHTML='<li class="muted" style="padding:8px 0">Nothing flagged. This script looks clean.</li>';return}
+  $('#finds').innerHTML=finds().map(f=>{
+    const st=d[f.id],mm=f.type==='total_mismatch',c=S.audit.cover;
+    const stateTxt={accepted:'Issue confirmed. Send back to the examiner.',dismissed:'Dismissed as a false alarm.',corrected:`Total corrected to ${c.computed_total}.`}[st];
+    return `<li class="f${mm?' mm':''}${st&&st!=='dismissed'?' done':''}${st==='dismissed'?' gone':''}${f.id===S.sel?' sel':''}" data-id="${f.id}">
+      <button class="fmain" data-a="sel"><i class="dot"></i><span><b>${esc(titleOf(f))}</b><small>${pageLabel(f.page)}, ${Math.round(f.confidence*100)}% confident</small></span></button>
+      <p class="fr">${esc(f.reason)}</p>
+      ${st?`<div class="state">${stateTxt}<button data-a="undo">Undo</button></div>`:`<div class="acts">${mm?`<button class="b p" data-a="correct">Correct total to ${c.computed_total}</button>`:'<button class="b p" data-a="accept">Confirm issue</button>'}<button class="b" data-a="dismiss">Dismiss</button></div>`}
+    </li>`}).join('');
+}
+function renderLog(){
+  $('#log').innerHTML=S.log.length?S.log.slice(0,40).map(l=>`<li><time>${l.t}</time>${esc(l.s)}: ${esc(l.m)}</li>`).join(''):'<li class="muted">No decisions yet.</li>';
+}
+
+/* ---------- canvas ---------- */
+function loadPage(p){
+  S.img=null;S.err='';const tok=++S.tok;draw();
+  if(S.demo){S.img=demoPage(S.cur,p);draw();kick();return}
+  const im=new Image();
+  im.onload=()=>{if(tok===S.tok){S.img=im;draw();kick()}};
+  im.onerror=()=>{if(tok===S.tok){S.err='This page image could not be loaded.';draw()}};
+  im.src=API+'/image/'+encodeURIComponent(S.cur)+'/'+p;
+}
+function kick(){if(calm){draw();return}S.until=performance.now()+2600;if(!S.raf){const go=()=>{draw();S.raf=performance.now()<S.until?requestAnimationFrame(go):0};S.raf=requestAnimationFrame(go)}}
+function draw(){
+  const cv=$('#cv'),st=$('#stage'),dpr=devicePixelRatio||1,W=st.clientWidth,H=st.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;const x=cv.getContext('2d');x.setTransform(dpr,0,0,dpr,0,0);x.clearRect(0,0,W,H);S.boxes=[];
+  if(!S.img){x.fillStyle='#8a98bb';x.font='15px "Hanken Grotesk",sans-serif';x.textAlign='center';x.fillText(S.err||(S.cur?'Loading page':'Pick a script on the left'),W/2,H/2);return}
+  const iw=S.img.naturalWidth||S.img.width,ih=S.img.naturalHeight||S.img.height,s=Math.min((W-28)/iw,(H-28)/ih),w=iw*s,h=ih*s,ox=(W-w)/2,oy=(H-h)/2;
+  x.shadowColor='#000a';x.shadowBlur=30;x.drawImage(S.img,ox,oy,w,h);x.shadowBlur=0;
+  const d=decs(),t=performance.now();
+  finds().filter(f=>f.page===S.page&&d[f.id]!=='dismissed').forEach(f=>{
+    const col=d[f.id]?'#2fd18b':(f.type==='omission'?'#ff4d5e':'#ffc53d'),b=f.bbox,rx=ox+b[0]*w,ry=oy+b[1]*h,rw=b[2]*w,rh=b[3]*h,on=f.id===S.sel;
+    const pulse=on&&!calm?Math.sin(t/160):0;
+    x.save();x.shadowColor=col;x.shadowBlur=on?26+10*pulse:14;x.strokeStyle=col;x.lineWidth=on?3+pulse:2;x.fillStyle=col+'22';
+    x.beginPath();x.roundRect(rx,ry,rw,rh,5);x.fill();x.stroke();x.restore();
+    const lab=(f.type==='omission'?(f.q?'Q'+f.q+' not graded':'Not graded'):'Total wrong')+', '+Math.round(f.confidence*100)+'%';
+    x.font='700 12px "Hanken Grotesk",sans-serif';x.textAlign='left';const tw=x.measureText(lab).width+14,ly=ry>26?ry-22:ry+rh+4;
+    x.fillStyle=col;x.fillRect(rx,ly,tw,20);x.fillStyle='#0a0f1d';x.fillText(lab,rx+7,ly+14);
+    S.boxes.push({f,rx,ry,rw,rh});
+  });
+}
+
+/* ---------- events ---------- */
+$('#list').addEventListener('click',e=>{const b=e.target.closest('[data-sid]');if(b)open(b.dataset.sid)});
+$('#pages').addEventListener('click',e=>{const b=e.target.closest('[data-p]');if(b)goPage(+b.dataset.p)});
+$('#prev').onclick=()=>step(-1);$('#next').onclick=()=>step(1);
+document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;if(e.key==='ArrowLeft')step(-1);if(e.key==='ArrowRight')step(1)});
+addEventListener('resize',draw);
+$('#finds').addEventListener('click',e=>{
+  const b=e.target.closest('[data-a]'),li=e.target.closest('[data-id]');if(!b||!li)return;
+  const f=finds().find(x=>x.id===li.dataset.id),a=b.dataset.a,d=decs(),c=S.audit.cover;
+  if(a==='sel')return select(f.id);
+  if(a==='accept'){d[f.id]='accepted';logAct(`Confirmed that ${f.q?'Q'+f.q:'an answer'} on page ${f.page} was not graded`)}
+  if(a==='dismiss'){d[f.id]='dismissed';logAct(`Dismissed "${titleOf(f)}" on ${pageLabel(f.page).toLowerCase()}`)}
+  if(a==='correct'){d[f.id]='corrected';logAct(`Corrected total from ${c.recorded_total} to ${c.computed_total}`)}
+  if(a==='undo'){delete d[f.id];logAct(`Reopened "${titleOf(f)}"`)}
+  S.sel=f.id;renderFinds();draw();
+});
+const cvEl=$('#cv'),tip=$('#tip');
+function hit(e){const r=cvEl.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;return{mx,my,b:S.boxes.find(k=>mx>=k.rx&&mx<=k.rx+k.rw&&my>=k.ry&&my<=k.ry+k.rh)}}
+cvEl.addEventListener('mousemove',e=>{const {mx,my,b}=hit(e);if(!b){tip.style.display='none';cvEl.style.cursor='default';return}
+  cvEl.style.cursor='pointer';tip.innerHTML=`<b>${esc(titleOf(b.f))}</b><br>${esc(b.f.reason)}`;tip.style.display='block';tip.style.left=Math.min(mx+14,cvEl.clientWidth-290)+'px';tip.style.top=(my+14)+'px'});
+cvEl.addEventListener('mouseleave',()=>tip.style.display='none');
+cvEl.addEventListener('click',e=>{const {b}=hit(e);if(b)select(b.f.id)});
+init();
+</script>
+</body>
+</html>

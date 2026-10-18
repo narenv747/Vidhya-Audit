@@ -1,0 +1,78 @@
+{
+  "script_id": "S001",
+  "cover": {
+    "image": "page_00.jpg",
+    "rows": [
+      {
+        "q": "1a",
+        "marks": 4,
+        "bbox": [
+          0.1,
+          0.3,
+          0.3,
+          0.06
+        ]
+      },
+      {
+        "q": "1b",
+        "marks": 5,
+        "bbox": [
+          0.1,
+          0.38,
+          0.3,
+          0.06
+        ]
+      },
+      {
+        "q": "14b",
+        "marks": 3,
+        "bbox": [
+          0.1,
+          0.46,
+          0.3,
+          0.06
+        ]
+      }
+    ],
+    "recorded_total": 10,
+    "computed_total": 12,
+    "total_bbox": [
+      0.7,
+      0.9,
+      0.15,
+      0.05
+    ]
+  },
+  "findings": [
+    {
+      "id": "f1",
+      "type": "total_mismatch",
+      "severity": "medium",
+      "page": 0,
+      "q": null,
+      "bbox": [
+        0.7,
+        0.9,
+        0.15,
+        0.05
+      ],
+      "confidence": 0.95,
+      "reason": "Recorded 10, rows sum to 12"
+    },
+    {
+      "id": "f2",
+      "type": "omission",
+      "severity": "medium",
+      "page": 2,
+      "q": "14b",
+      "bbox": [
+        0.08,
+        0.25,
+        0.84,
+        0.3
+      ],
+      "confidence": 0.9,
+      "reason": "Handwritten answer present, no marks or ticks"
+    }
+  ]
+}

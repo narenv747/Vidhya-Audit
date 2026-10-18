@@ -1,0 +1,17 @@
+{
+  "script_id": "SCIENCE_PHOTO_001",
+  "cover": {
+    "image": null,
+    "rows": [],
+    "recorded_total": null,
+    "computed_total": 0,
+    "total_bbox": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "missing": true
+  },
+  "findings": []
+}
