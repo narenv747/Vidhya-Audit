@@ -44,6 +44,36 @@
       0.05
     ]
   },
+  "pages": {
+    "1": {
+      "marks": [
+        4
+      ],
+      "sum": 4,
+      "page_total": 4,
+      "has_writing": true,
+      "questions": [
+        {
+          "q": "1a",
+          "marks": [
+            4
+          ]
+        }
+      ]
+    },
+    "2": {
+      "marks": [],
+      "sum": 0,
+      "page_total": null,
+      "has_writing": true,
+      "questions": [
+        {
+          "q": "14b",
+          "marks": []
+        }
+      ]
+    }
+  },
   "findings": [
     {
       "id": "f1",
@@ -58,12 +88,13 @@
         0.05
       ],
       "confidence": 0.95,
-      "reason": "Recorded 10, rows sum to 12"
+      "reason": "Recorded 10, rows sum to 12",
+      "expected": 12
     },
     {
       "id": "f2",
       "type": "omission",
-      "severity": "medium",
+      "severity": "high",
       "page": 2,
       "q": "14b",
       "bbox": [
@@ -72,8 +103,8 @@
         0.84,
         0.3
       ],
-      "confidence": 0.9,
-      "reason": "Handwritten answer present, no marks or ticks"
+      "confidence": 0.85,
+      "reason": "Question 14b is written here but has no mark in the left margin"
     }
   ]
 }

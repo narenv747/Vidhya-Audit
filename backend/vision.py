@@ -28,7 +28,7 @@ def _jpeg_bytes(image_path, max_side=1600):
 
 
 def _mock(image_path, prompt):
-    """Fake AI answers so you can test the whole pipeline with no API key."""
+    """Fake AI answers so you can test the whole pipeline with no API key. The answers are NOT real."""
     if prompt.startswith("[COVER]"):
         rows = [{"q": q, "marks": m, "bbox": [0.1, 0.30 + i * 0.08, 0.3, 0.06]}
                 for i, (q, m) in enumerate([("1a", 4), ("1b", 5), ("14b", 3)])]
@@ -38,10 +38,13 @@ def _mock(image_path, prompt):
     m = re.search(r"page_(\d+)", str(image_path))
     n = int(m.group(1)) if m else 1
     q = {1: "1a", 2: "14b"}.get(n, f"{n}")
-    from redink import load_page, red_pixels   # fake "AI" that sees ticks via the red-ink counter
+    from redink import load_page, red_pixels   # fake "AI" that sees the demo tick via the red-ink counter
     bbox = [0.08, 0.25, 0.84, 0.30]
     marked = red_pixels(load_page(image_path), bbox) >= 30
-    return json.dumps({"regions": [{"q": q, "bbox": bbox, "has_student_writing": True, "has_evaluator_mark": marked}]})
+    marks = [{1: 4, 2: 3}.get(n, 1)] if marked else []
+    total = {"value": sum(marks), "bbox": [0.03, 0.88, 0.12, 0.07]} if marked else None
+    return json.dumps({"has_student_writing": True, "carry_marks": [],
+                       "questions": [{"q": q, "bbox": bbox, "marks": marks}], "page_total": total})
 
 
 def call_vision(image_path, prompt):

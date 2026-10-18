@@ -58,6 +58,9 @@ h2{font-size:17px;margin:6px 0 10px}
 .nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px;border-top:1px solid var(--line)}
 .nav button{padding:6px 14px;border:1px solid var(--line);border-radius:6px}
 .nav button:hover:not(:disabled){background:var(--panel2)}
+.pagechk{padding:8px 14px;border-top:1px solid var(--line);color:var(--mut);text-align:center}
+.pagechk.ok{color:var(--grn)}
+.pagechk.bad{color:var(--yel)}
 .muted{color:var(--mut)}
 .err{color:var(--red)}
 .warn{margin:0 0 12px;padding:8px 10px;border-radius:6px;border:1px solid var(--yel);color:var(--yel);background:#ffc53d14}
@@ -121,6 +124,7 @@ h2{font-size:17px;margin:6px 0 10px}
     <div class="pages" id="pages" aria-label="Pages"></div>
     <div id="stage"><canvas id="cv" role="img" aria-label="Scanned answer page with highlighted findings"></canvas><div id="tip"></div></div>
     <div class="nav"><button id="prev">Previous page</button><span id="pg" aria-live="polite"></span><button id="next">Next page</button></div>
+    <div id="pagechk" class="pagechk" hidden></div>
   </section>
   <aside id="right">
     <div class="cover" id="cover"></div>
@@ -189,9 +193,12 @@ async function api(path,ms=8000,opt={}){
 /* ---------- state helpers ---------- */
 const decs=()=>S.decs[S.cur]||(S.decs[S.cur]={});
 const finds=()=>S.audit?S.audit.findings:[];
-const titleOf=f=>f.type==='total_mismatch'?'Cover total is wrong':(f.q?`Question ${f.q} not graded`:'Answer not graded');
+const titleOf=f=>({total_mismatch:'Cover total is wrong',page_total_mismatch:'Page total is wrong',page_total_missing:'Page total is missing'}[f.type])||(f.q?`Question ${f.q} has no mark`:'A question has no mark');
+const isTotal=f=>f.type!=='omission';
+const fixOf=f=>f.expected!=null?f.expected:(S.audit&&S.audit.cover?S.audit.cover.computed_total:0);
 const pageLabel=p=>p===0?'Cover sheet':'Page '+p;
-const riskOf=fs=>fs.some(f=>f.type==='omission')?'red':(fs.length?'yellow':'green');
+const isRed=f=>f.type==='omission'||f.type==='page_total_mismatch';
+const riskOf=fs=>fs.some(isRed)?'red':(fs.length?'yellow':'green');
 function logAct(t){S.log.unshift({t:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}),s:S.cur,m:t});renderLog();persist()}
 
 /* decisions are saved on the server so they survive a refresh */
@@ -259,15 +266,28 @@ function renderList(){
 }
 function renderPages(){
   $('#pages').innerHTML=S.pages.map(p=>{
-    const fs=finds().filter(f=>f.page===p),k=fs.some(f=>f.type==='omission')?'red':(fs.length?'yellow':'');
+    const fs=finds().filter(f=>f.page===p),k=fs.some(isRed)?'red':(fs.length?'yellow':'');
     return `<button class="chip${p===S.page?' cur':''}" data-p="${p}" aria-label="${pageLabel(p)}">${p===0?'Cover':p}${k?`<i class="${k}"></i>`:''}</button>`}).join('');
   const i=S.pages.indexOf(S.page);$('#pg').textContent=S.pages.length?`${pageLabel(S.page)}, ${i+1} of ${S.pages.length}`:'';
   $('#prev').disabled=i<=0;$('#next').disabled=i<0||i>=S.pages.length-1;
+  renderPageChk();
+}
+/* Rule 1 made visible: the marks on this page against the circled total at the bottom left */
+function renderPageChk(){
+  const e=$('#pagechk'),p=S.audit&&S.audit.pages&&S.audit.pages[String(S.page)];
+  if(!p){e.hidden=true;return}
+  e.hidden=false;
+  const sum=p.marks.length?p.marks.join(' + ')+' = '+p.sum:'no marks found';
+  let txt,cls='';
+  if(p.page_total==null){txt=`Marks on this page: ${sum}. No circled total found.`;cls=p.marks.length?'bad':''}
+  else if(p.page_total===p.sum){txt=`Marks on this page: ${sum}. Circled total: ${p.page_total}. They match.`;cls='ok'}
+  else{txt=`Marks on this page: ${sum}. Circled total: ${p.page_total}. They do not match.`;cls='bad'}
+  e.className='pagechk '+cls;e.textContent=txt;
 }
 function renderCover(){
   const a=S.audit,c=a&&a.cover;
   const warn=a&&a.mock?'<p class="warn">This audit used test answers, not a real AI, so the findings are not real. Set a vision API key, then choose Re-run audit.</p>':'';
-  if(!c||!c.image){$('#cover').innerHTML=warn+'<h2>Cover total</h2><p class="muted">This script has no cover sheet, so the marks total could not be checked. Answer pages were still audited.</p>';return}
+  if(!c||!c.image){$('#cover').innerHTML=warn+'<h2>Cover total</h2><p class="muted">This script has no cover sheet. Instead, each page&rsquo;s marks are added up and compared with the circled total at its bottom left, and every question number must have a mark in the left margin.</p>';return}
   const ok=c.recorded_total!=null&&c.recorded_total===c.computed_total;
   $('#cover').innerHTML=`${warn}<h2>Cover total</h2><div class="tot"><div class="rec"><span>Examiner wrote</span><b>${c.recorded_total??'not read'}</b></div><div class="cmp"><span>Rows add up to</span><b>${c.computed_total}</b></div></div><div class="${ok?'muted':'err'}">${ok?'The totals match.':(c.recorded_total==null?'The written total could not be read.':'The totals do not match.')}</div>`;
 }
@@ -276,12 +296,12 @@ function renderFinds(){
   $('#fh').textContent=`Findings (${open} open)`;
   if(!finds().length){$('#finds').innerHTML='<li class="muted" style="padding:8px 0">Nothing flagged. This script looks clean.</li>';return}
   $('#finds').innerHTML=finds().map(f=>{
-    const st=d[f.id],mm=f.type==='total_mismatch',c=S.audit.cover;
-    const stateTxt={accepted:'Issue confirmed. Send back to the examiner.',dismissed:'Dismissed as a false alarm.',corrected:`Total corrected to ${c.computed_total}.`}[st];
-    return `<li class="f${mm?' mm':''}${st&&st!=='dismissed'?' done':''}${st==='dismissed'?' gone':''}${f.id===S.sel?' sel':''}" data-id="${f.id}">
+    const st=d[f.id],mm=isTotal(f),fx=fixOf(f);
+    const stateTxt={accepted:'Issue confirmed. Send back to the examiner.',dismissed:'Dismissed as a false alarm.',corrected:`Total corrected to ${fx}.`}[st];
+    return `<li class="f${isRed(f)?'':' mm'}${st&&st!=='dismissed'?' done':''}${st==='dismissed'?' gone':''}${f.id===S.sel?' sel':''}" data-id="${f.id}">
       <button class="fmain" data-a="sel"><i class="dot"></i><span><b>${esc(titleOf(f))}</b><small>${pageLabel(f.page)}, ${Math.round(f.confidence*100)}% confident</small></span></button>
       <p class="fr">${esc(f.reason)}</p>
-      ${st?`<div class="state">${stateTxt}<button data-a="undo">Undo</button></div>`:`<div class="acts">${mm?`<button class="b p" data-a="correct">Correct total to ${c.computed_total}</button>`:'<button class="b p" data-a="accept">Confirm issue</button>'}<button class="b" data-a="dismiss">Dismiss</button></div>`}
+      ${st?`<div class="state">${stateTxt}<button data-a="undo">Undo</button></div>`:`<div class="acts">${mm?`<button class="b p" data-a="correct">Correct total to ${fx}</button>`:'<button class="b p" data-a="accept">Confirm issue</button>'}<button class="b" data-a="dismiss">Dismiss</button></div>`}
     </li>`}).join('');
 }
 function renderLog(){
@@ -307,11 +327,11 @@ function draw(){
   x.shadowColor='#000a';x.shadowBlur=30;x.drawImage(S.img,ox,oy,w,h);x.shadowBlur=0;
   const d=decs(),t=performance.now();
   finds().filter(f=>f.page===S.page&&d[f.id]!=='dismissed').forEach(f=>{
-    const col=d[f.id]?'#2fd18b':(f.type==='omission'?'#ff4d5e':'#ffc53d'),b=f.bbox,rx=ox+b[0]*w,ry=oy+b[1]*h,rw=b[2]*w,rh=b[3]*h,on=f.id===S.sel;
+    const col=d[f.id]?'#2fd18b':(isRed(f)?'#ff4d5e':'#ffc53d'),b=f.bbox,rx=ox+b[0]*w,ry=oy+b[1]*h,rw=b[2]*w,rh=b[3]*h,on=f.id===S.sel;
     const pulse=on&&!calm?Math.sin(t/160):0;
     x.save();x.shadowColor=col;x.shadowBlur=on?26+10*pulse:14;x.strokeStyle=col;x.lineWidth=on?3+pulse:2;x.fillStyle=col+'22';
     x.beginPath();x.roundRect(rx,ry,rw,rh,5);x.fill();x.stroke();x.restore();
-    const lab=(f.type==='omission'?(f.q?'Q'+f.q+' not graded':'Not graded'):'Total wrong')+', '+Math.round(f.confidence*100)+'%';
+    const lab=({omission:f.q?'Q'+f.q+' no mark':'No mark',page_total_mismatch:'Page total wrong',page_total_missing:'Total missing'}[f.type]||'Total wrong')+', '+Math.round(f.confidence*100)+'%';
     x.font='700 12px "Hanken Grotesk",sans-serif';x.textAlign='left';const tw=x.measureText(lab).width+14,ly=ry>26?ry-22:ry+rh+4;
     x.fillStyle=col;x.fillRect(rx,ly,tw,20);x.fillStyle='#0a0f1d';x.fillText(lab,rx+7,ly+14);
     S.boxes.push({f,rx,ry,rw,rh});
@@ -374,9 +394,9 @@ $('#finds').addEventListener('click',e=>{
   const b=e.target.closest('[data-a]'),li=e.target.closest('[data-id]');if(!b||!li)return;
   const f=finds().find(x=>x.id===li.dataset.id),a=b.dataset.a,d=decs(),c=S.audit.cover;
   if(a==='sel')return select(f.id);
-  if(a==='accept'){d[f.id]='accepted';logAct(`Confirmed that ${f.q?'Q'+f.q:'an answer'} on page ${f.page} was not graded`)}
+  if(a==='accept'){d[f.id]='accepted';logAct(`Confirmed that ${f.q?'Q'+f.q:'an answer'} on page ${f.page} has no mark`)}
   if(a==='dismiss'){d[f.id]='dismissed';logAct(`Dismissed "${titleOf(f)}" on ${pageLabel(f.page).toLowerCase()}`)}
-  if(a==='correct'){d[f.id]='corrected';logAct(`Corrected total from ${c.recorded_total} to ${c.computed_total}`)}
+  if(a==='correct'){d[f.id]='corrected';logAct(f.type==='total_mismatch'?`Corrected cover total from ${c.recorded_total} to ${c.computed_total}`:`Corrected page ${f.page} total to ${fixOf(f)}`)}
   if(a==='undo'){delete d[f.id];logAct(`Reopened "${titleOf(f)}"`)}
   S.sel=f.id;renderFinds();draw();
 });

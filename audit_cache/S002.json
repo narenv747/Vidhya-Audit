@@ -44,5 +44,39 @@
       0.05
     ]
   },
+  "pages": {
+    "1": {
+      "marks": [
+        4
+      ],
+      "sum": 4,
+      "page_total": 4,
+      "has_writing": true,
+      "questions": [
+        {
+          "q": "1a",
+          "marks": [
+            4
+          ]
+        }
+      ]
+    },
+    "2": {
+      "marks": [
+        3
+      ],
+      "sum": 3,
+      "page_total": 3,
+      "has_writing": true,
+      "questions": [
+        {
+          "q": "14b",
+          "marks": [
+            3
+          ]
+        }
+      ]
+    }
+  },
   "findings": []
 }
