@@ -1,5 +1,6 @@
 {
   "script_id": "S001",
+  "mock": true,
   "cover": {
     "image": "page_00.jpg",
     "rows": [

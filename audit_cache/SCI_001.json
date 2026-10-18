@@ -1,5 +1,6 @@
 {
   "script_id": "SCI_001",
+  "mock": true,
   "cover": {
     "image": null,
     "rows": [],

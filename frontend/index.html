@@ -13,6 +13,7 @@ html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--txt);font:14px/1.45 "Hanken Grotesk",system-ui,sans-serif;display:flex;flex-direction:column}
 h1,h2{font-family:Fraunces,Georgia,serif;font-weight:600;margin:0}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:disabled{opacity:.5;cursor:not-allowed}
 ul{list-style:none;margin:0;padding:0}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 header{display:flex;align-items:center;gap:18px;padding:12px 20px;border-bottom:1px solid var(--line);flex-wrap:wrap}
@@ -21,7 +22,7 @@ h1{font-size:23px}
 .sum{margin-left:auto;color:var(--txt);font-weight:500}
 .mode{color:var(--mut)}
 .mode.demo{color:var(--yel)}
-main{flex:1;min-height:0;display:grid;grid-template-columns:250px minmax(0,1fr) 360px}
+main{flex:1;min-height:0;display:grid;grid-template-columns:270px minmax(0,1fr) 360px}
 aside{overflow:auto;padding:14px 16px;background:var(--panel)}
 #left{border-right:1px solid var(--line)}
 #right{border-left:1px solid var(--line)}
@@ -34,6 +35,16 @@ h2{font-size:17px;margin:6px 0 10px}
 .dot.red{background:var(--red);box-shadow:0 0 10px var(--red)}
 .dot.yellow{background:var(--yel);box-shadow:0 0 10px var(--yel)}
 .dot.green{background:var(--grn);box-shadow:0 0 8px var(--grn)}
+/* upload */
+.up{margin-top:18px;padding-top:6px;border-top:1px solid var(--line)}
+.drop{display:block;padding:16px 12px;border:1.5px dashed #2b3c63;border-radius:8px;color:var(--mut);text-align:center;cursor:pointer}
+.drop:hover,.drop.drag,.drop:focus-visible{border-color:var(--acc);color:var(--txt);background:#101a30}
+.drop b{display:block;color:var(--txt);font-weight:500;margin-bottom:2px}
+.up input[type=text]{width:100%;margin:10px 0 8px;padding:8px 10px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--txt);font:inherit}
+.chk{display:flex;gap:8px;align-items:center;margin-bottom:10px;color:#c3cde8}
+.upmsg{margin:8px 0 0;color:var(--mut)}
+.upmsg.err{color:var(--red)}
+#go{width:100%}
 #mid{display:flex;flex-direction:column;min-width:0;background:radial-gradient(900px 500px at 50% 40%,#101b36,var(--bg))}
 .pages{display:flex;gap:6px;overflow-x:auto;padding:10px 14px}
 .chip{position:relative;flex:none;min-width:36px;padding:4px 10px;border-radius:14px;border:1px solid var(--line);color:var(--mut)}
@@ -46,15 +57,18 @@ h2{font-size:17px;margin:6px 0 10px}
 #tip{position:absolute;pointer-events:none;max-width:280px;padding:7px 10px;border-radius:6px;background:#050912;border:1px solid var(--line);display:none;font-size:13px}
 .nav{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px;border-top:1px solid var(--line)}
 .nav button{padding:6px 14px;border:1px solid var(--line);border-radius:6px}
-.nav button:hover{background:var(--panel2)}
+.nav button:hover:not(:disabled){background:var(--panel2)}
 .muted{color:var(--mut)}
 .err{color:var(--red)}
+.warn{margin:0 0 12px;padding:8px 10px;border-radius:6px;border:1px solid var(--yel);color:var(--yel);background:#ffc53d14}
 .tot{display:flex;gap:22px;align-items:baseline;margin:6px 0 4px}
 .tot span{display:block;color:var(--mut);font-size:13px}
 .tot b{font:600 28px Fraunces,Georgia,serif}
 .tot .rec b{color:var(--yel)}
 .tot .cmp b{color:var(--grn)}
 .cover{padding-bottom:14px;margin-bottom:8px;border-bottom:1px solid var(--line)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hrow .b{padding:4px 9px;font-size:13px}
 .f{--c:var(--red);padding:12px 0 12px 10px;border-bottom:1px solid var(--line);border-left:3px solid transparent}
 .f.mm{--c:var(--yel)}
 .f.sel{border-left-color:var(--c);background:linear-gradient(90deg,#14203a55,transparent)}
@@ -67,12 +81,15 @@ h2{font-size:17px;margin:6px 0 10px}
 .fr{margin:6px 0 4px 20px;color:#c3cde8}
 .acts{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 0 20px}
 .b{padding:6px 11px;border-radius:5px;border:1px solid var(--line)}
-.b:hover{background:var(--panel2)}
-.b.p{background:var(--c);border-color:var(--c);color:#0a0f1d;font-weight:700}
+.b:hover:not(:disabled){background:var(--panel2)}
+.b.p{background:var(--c,var(--acc));border-color:var(--c,var(--acc));color:#0a0f1d;font-weight:700}
+.b.p:hover:not(:disabled){filter:brightness(1.1);background:var(--c,var(--acc))}
 .state{margin:8px 0 0 20px;color:var(--mut)}
 .state button{color:var(--acc);text-decoration:underline;margin-left:6px}
 #log li{padding:6px 0;border-bottom:1px solid var(--line);color:#c3cde8}
 #log time{color:var(--mut);margin-right:8px}
+#saved{font-size:13px;color:var(--mut)}
+#saved.bad{color:var(--red)}
 @media(max-width:1000px){body{height:auto}main{display:block}aside{border:0}#mid{height:75vh}}
 </style>
 </head>
@@ -84,7 +101,22 @@ h2{font-size:17px;margin:6px 0 10px}
   <span class="mode" id="mode"></span>
 </header>
 <main>
-  <aside id="left"><h2>Answer scripts</h2><ul id="list"></ul></aside>
+  <aside id="left">
+    <h2>Answer scripts</h2>
+    <ul id="list"></ul>
+    <section class="up" aria-labelledby="uph">
+      <h2 id="uph">Add a script</h2>
+      <label class="drop" id="drop" tabindex="0">
+        <input type="file" id="files" accept="image/*,.pdf" multiple hidden>
+        <b id="dropt">Choose scanned pages</b>
+        <span id="dropsub">Drop a PDF, or JPG and PNG pages, here</span>
+      </label>
+      <input type="text" id="newid" maxlength="64" placeholder="Script ID (optional)" aria-label="Script ID">
+      <label class="chk"><input type="checkbox" id="cover" checked> First page is the cover sheet</label>
+      <button class="b p" id="go" disabled>Upload and audit</button>
+      <p class="upmsg" id="upmsg" role="status"></p>
+    </section>
+  </aside>
   <section id="mid">
     <div class="pages" id="pages" aria-label="Pages"></div>
     <div id="stage"><canvas id="cv" role="img" aria-label="Scanned answer page with highlighted findings"></canvas><div id="tip"></div></div>
@@ -92,16 +124,21 @@ h2{font-size:17px;margin:6px 0 10px}
   </section>
   <aside id="right">
     <div class="cover" id="cover"></div>
-    <h2 id="fh">Findings</h2><ul id="finds"></ul>
-    <h2 style="margin-top:22px">Decision log</h2><ul id="log"><li class="muted">No decisions yet.</li></ul>
+    <div class="hrow"><h2 id="fh">Findings</h2><button class="b" id="rerun" hidden>Re-run audit</button></div>
+    <ul id="finds"></ul>
+    <div class="hrow" style="margin-top:22px"><h2>Decision log</h2><span id="saved" role="status"></span></div>
+    <ul id="log"><li class="muted">No decisions yet.</li></ul>
+    <button class="b" id="export" style="margin-top:12px" hidden>Download decisions (JSON)</button>
   </aside>
 </main>
 <script>
-const API = new URLSearchParams(location.search).get('api') || 'http://localhost:8000';
+const qs = new URLSearchParams(location.search);
+// Served by the backend at /app/ -> talk to the same server. Otherwise default to localhost:8000.
+const API = qs.get('api') || (location.pathname.startsWith('/app') ? location.origin : 'http://localhost:8000');
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-const S = {scripts:[], cur:null, audit:null, page:1, pages:[], decs:{}, log:[], demo:false, sel:null, img:null, boxes:[], tok:0, until:0, raf:0, err:''};
+const S = {scripts:[], cur:null, audit:null, page:1, pages:[], decs:{}, log:[], demo:false, sel:null, img:null, boxes:[], tok:0, openTok:0, until:0, raf:0, err:'', picked:[]};
 
 /* ---------- demo data (used only when the backend is not reachable) ---------- */
 const DEMO = {
@@ -140,10 +177,13 @@ function demoPage(sid,p){
 }
 
 /* ---------- api ---------- */
-async function api(path,ms=8000){
+async function api(path,ms=8000,opt={}){
   const ac=new AbortController(),t=setTimeout(()=>ac.abort(),ms);
-  try{const r=await fetch(API+path,{signal:ac.signal});if(!r.ok)throw new Error((await r.text()).slice(0,160)||r.status);return await r.json()}
-  finally{clearTimeout(t)}
+  try{
+    const r=await fetch(API+path,{signal:ac.signal,...opt});
+    if(!r.ok){let m='';try{const j=await r.clone().json();m=typeof j.detail==='string'?j.detail:''}catch(e){}throw new Error(m||(await r.text()).slice(0,160)||r.status)}
+    return await r.json();
+  }finally{clearTimeout(t)}
 }
 
 /* ---------- state helpers ---------- */
@@ -151,7 +191,21 @@ const decs=()=>S.decs[S.cur]||(S.decs[S.cur]={});
 const finds=()=>S.audit?S.audit.findings:[];
 const titleOf=f=>f.type==='total_mismatch'?'Cover total is wrong':(f.q?`Question ${f.q} not graded`:'Answer not graded');
 const pageLabel=p=>p===0?'Cover sheet':'Page '+p;
-function logAct(t){S.log.unshift({t:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}),s:S.cur,m:t});renderLog()}
+const riskOf=fs=>fs.some(f=>f.type==='omission')?'red':(fs.length?'yellow':'green');
+function logAct(t){S.log.unshift({t:new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit',second:'2-digit'}),s:S.cur,m:t});renderLog();persist()}
+
+/* decisions are saved on the server so they survive a refresh */
+let saveTimer=0;
+function setSaved(t,bad){const e=$('#saved');e.textContent=t;e.className=bad?'bad':''}
+function persist(){
+  if(S.demo||!S.cur)return;
+  const id=S.cur;setSaved('Saving');clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    api('/decisions/'+encodeURIComponent(id),8000,{method:'PUT',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({decisions:S.decs[id]||{},log:S.log.filter(l=>l.s===id)})})
+      .then(()=>setSaved('Saved')).catch(()=>setSaved('Not saved. Check the server.',true));
+  },400);
+}
 
 /* ---------- init + open ---------- */
 async function init(){
@@ -160,17 +214,31 @@ async function init(){
   $('#mode').className='mode'+(S.demo?' demo':'');
   renderList();renderSum();
   if(S.scripts.length)open(S.scripts[0].script_id);
-  else $('#list').innerHTML='<li class="muted">No scripts found. Add folders to data/ and refresh.</li>';
+  else{$('#finds').innerHTML='<li class="muted">No scripts yet. Add one on the left.</li>';draw()}
 }
-async function open(id){
+async function open(id,force=false){
+  const tk=++S.openTok;
   S.cur=id;S.audit=null;S.img=null;S.sel=null;renderList();
+  $('#rerun').hidden=true;$('#export').hidden=true;setSaved('');
   $('#finds').innerHTML='<li class="muted">Auditing this script. A first run can take a minute.</li>';$('#cover').innerHTML='';draw();
-  try{S.audit=S.demo?DEMO.audits[id]:await api('/audit/'+encodeURIComponent(id),180000)}
-  catch(e){$('#finds').innerHTML='<li class="err">Could not audit this script: '+esc(e.message)+'</li>';return}
-  const sc=S.scripts.find(s=>s.script_id===id),start=(S.audit.cover&&S.audit.cover.image)?0:1;
-  S.pages=Array.from({length:sc.pages},(_,i)=>start+i);
-  const first=finds()[0];S.page=first?first.page:S.pages[0];
-  renderPages();renderCover();renderFinds();renderSum();loadPage(S.page);
+  let audit;
+  try{audit=S.demo?DEMO.audits[id]:await api('/audit/'+encodeURIComponent(id)+(force?'?force=true':''),180000,force?{method:'POST'}:{})}
+  catch(e){if(tk===S.openTok)$('#finds').innerHTML='<li class="err">Could not audit this script: '+esc(e.message)+'</li>';return}
+  if(tk!==S.openTok)return;                       // the person opened another script while this one was running
+  S.audit=audit;
+  if(force)S.decs[id]={};
+  if(!S.demo&&!force){
+    try{const d=await api('/decisions/'+encodeURIComponent(id),4000);
+      S.decs[id]=d.decisions||{};S.log=S.log.filter(l=>l.s!==id).concat(d.log||[]);if(tk!==S.openTok)return}catch(e){}
+  }
+  const sc=S.scripts.find(s=>s.script_id===id);
+  if(sc){sc.risk=riskOf(audit.findings);sc.n_findings=audit.findings.length;sc.mock=!!audit.mock;renderList();renderSum()}
+  const start=(audit.cover&&audit.cover.image)?0:1;
+  S.pages=(sc&&sc.page_numbers&&sc.page_numbers.length)?sc.page_numbers:Array.from({length:sc?sc.pages:0},(_,i)=>start+i);
+  const first=finds().find(f=>!decs()[f.id])||finds()[0];
+  S.page=first&&S.pages.includes(first.page)?first.page:S.pages[0];
+  $('#rerun').hidden=S.demo;$('#export').hidden=false;
+  renderPages();renderCover();renderFinds();renderLog();loadPage(S.page);
   if(first)S.sel=first.id,renderFinds(),kick();
 }
 function goPage(p){if(!S.pages.includes(p))return;S.page=p;renderPages();loadPage(p)}
@@ -187,19 +255,21 @@ function renderSum(){
   $('#sum').textContent=`${S.scripts.length} scripts, ${fl} flagged`;
 }
 function renderList(){
-  $('#list').innerHTML=S.scripts.map(s=>`<li><button class="sc${s.script_id===S.cur?' cur':''}" data-sid="${esc(s.script_id)}"><i class="dot ${esc(s.risk)}"></i><span>${esc(s.script_id)}<small>${s.pages} pages${s.risk==='unknown'?', not audited yet':', '+s.n_findings+' findings'}</small></span></button></li>`).join('');
+  $('#list').innerHTML=S.scripts.length?S.scripts.map(s=>`<li><button class="sc${s.script_id===S.cur?' cur':''}" data-sid="${esc(s.script_id)}"><i class="dot ${esc(s.risk)}"></i><span>${esc(s.script_id)}<small>${s.pages} pages${s.risk==='unknown'?', not audited yet':', '+s.n_findings+' findings'}${s.mock?', test data':''}</small></span></button></li>`).join(''):'<li class="muted">No scripts yet.</li>';
 }
 function renderPages(){
   $('#pages').innerHTML=S.pages.map(p=>{
     const fs=finds().filter(f=>f.page===p),k=fs.some(f=>f.type==='omission')?'red':(fs.length?'yellow':'');
     return `<button class="chip${p===S.page?' cur':''}" data-p="${p}" aria-label="${pageLabel(p)}">${p===0?'Cover':p}${k?`<i class="${k}"></i>`:''}</button>`}).join('');
-  const i=S.pages.indexOf(S.page);$('#pg').textContent=`${pageLabel(S.page)}, ${i+1} of ${S.pages.length}`;
+  const i=S.pages.indexOf(S.page);$('#pg').textContent=S.pages.length?`${pageLabel(S.page)}, ${i+1} of ${S.pages.length}`:'';
+  $('#prev').disabled=i<=0;$('#next').disabled=i<0||i>=S.pages.length-1;
 }
 function renderCover(){
-  const c=S.audit&&S.audit.cover;
-  if(!c||!c.image){$('#cover').innerHTML='<h2>Cover total</h2><p class="muted">This script has no cover sheet, so the marks total could not be checked. Answer pages were still audited.</p>';return}
+  const a=S.audit,c=a&&a.cover;
+  const warn=a&&a.mock?'<p class="warn">This audit used test answers, not a real AI, so the findings are not real. Set a vision API key, then choose Re-run audit.</p>':'';
+  if(!c||!c.image){$('#cover').innerHTML=warn+'<h2>Cover total</h2><p class="muted">This script has no cover sheet, so the marks total could not be checked. Answer pages were still audited.</p>';return}
   const ok=c.recorded_total!=null&&c.recorded_total===c.computed_total;
-  $('#cover').innerHTML=`<h2>Cover total</h2><div class="tot"><div class="rec"><span>Examiner wrote</span><b>${c.recorded_total??'not read'}</b></div><div class="cmp"><span>Rows add up to</span><b>${c.computed_total}</b></div></div><div class="${ok?'muted':'err'}">${ok?'The totals match.':(c.recorded_total==null?'The written total could not be read.':'The totals do not match.')}</div>`;
+  $('#cover').innerHTML=`${warn}<h2>Cover total</h2><div class="tot"><div class="rec"><span>Examiner wrote</span><b>${c.recorded_total??'not read'}</b></div><div class="cmp"><span>Rows add up to</span><b>${c.computed_total}</b></div></div><div class="${ok?'muted':'err'}">${ok?'The totals match.':(c.recorded_total==null?'The written total could not be read.':'The totals do not match.')}</div>`;
 }
 function renderFinds(){
   const d=decs(),open=finds().filter(f=>!d[f.id]).length;
@@ -215,7 +285,8 @@ function renderFinds(){
     </li>`}).join('');
 }
 function renderLog(){
-  $('#log').innerHTML=S.log.length?S.log.slice(0,40).map(l=>`<li><time>${l.t}</time>${esc(l.s)}: ${esc(l.m)}</li>`).join(''):'<li class="muted">No decisions yet.</li>';
+  const mine=S.log.filter(l=>l.s===S.cur);
+  $('#log').innerHTML=mine.length?mine.slice(0,40).map(l=>`<li><time>${esc(l.t)}</time>${esc(l.m)}</li>`).join(''):'<li class="muted">No decisions yet.</li>';
 }
 
 /* ---------- canvas ---------- */
@@ -246,6 +317,52 @@ function draw(){
     S.boxes.push({f,rx,ry,rw,rh});
   });
 }
+
+/* ---------- upload ---------- */
+function upMsg(t,bad){const e=$('#upmsg');e.textContent=t;e.className='upmsg'+(bad?' err':'')}
+function pick(list){
+  S.picked=[...list].filter(f=>/\.(pdf|jpe?g|png)$/i.test(f.name));
+  const n=S.picked.length;
+  $('#dropt').textContent=n?(n===1?S.picked[0].name:`${n} files chosen`):'Choose scanned pages';
+  $('#dropsub').textContent=n?'Pages are ordered by file name':'Drop a PDF, or JPG and PNG pages, here';
+  $('#go').disabled=!n;
+  upMsg([...list].length>n?'Skipped files that are not PDF, JPG or PNG.':'',false);
+}
+async function upload(){
+  if(S.demo){upMsg('The backend is not running, so uploads are unavailable. Start it with: uvicorn main:app --port 8000',true);return}
+  const fd=new FormData();S.picked.forEach(f=>fd.append('files',f));
+  fd.append('script_id',$('#newid').value.trim());fd.append('has_cover',$('#cover').checked);
+  $('#go').disabled=true;upMsg('Uploading');
+  try{
+    const r=await fetch(API+'/upload',{method:'POST',body:fd}),j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(typeof j.detail==='string'?j.detail:'Upload failed ('+r.status+')');
+    S.scripts=await api('/scripts',4000);renderList();renderSum();
+    $('#files').value='';$('#newid').value='';pick([]);
+    upMsg(`Saved ${j.pages} page${j.pages===1?'':'s'} as ${j.script_id}. Auditing now.`);
+    open(j.script_id);
+  }catch(e){upMsg(e.message,true);$('#go').disabled=!S.picked.length}
+}
+const drop=$('#drop');
+$('#files').addEventListener('change',e=>pick(e.target.files));
+['dragenter','dragover'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.add('drag')}));
+['dragleave','drop'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.remove('drag')}));
+drop.addEventListener('drop',e=>pick(e.dataTransfer.files));
+drop.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('#files').click()}});
+$('#go').onclick=upload;
+
+/* ---------- export + re-run ---------- */
+$('#export').onclick=()=>{
+  if(!S.audit)return;const id=S.cur,d=S.decs[id]||{},c=S.audit.cover;
+  const out={script_id:id,exported:new Date().toISOString(),test_data:!!S.audit.mock,
+    cover:{recorded_total:c.recorded_total,computed_total:c.computed_total},
+    findings:finds().map(f=>({...f,decision:d[f.id]||'open'})),log:S.log.filter(l=>l.s===id)};
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,2)],{type:'application/json'}));
+  a.download=id+'-decisions.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+$('#rerun').onclick=()=>{
+  if(!S.cur||!confirm('Re-run the audit for '+S.cur+'? Your decisions for this script will be cleared.'))return;
+  S.log=S.log.filter(l=>l.s!==S.cur);open(S.cur,true);
+};
 
 /* ---------- events ---------- */
 $('#list').addEventListener('click',e=>{const b=e.target.closest('[data-sid]');if(b)open(b.dataset.sid)});

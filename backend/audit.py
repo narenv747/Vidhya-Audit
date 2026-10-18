@@ -1,9 +1,9 @@
 """The audit pipeline: cover-sheet maths check + skipped-answer detection."""
-import json, os
+import json, os, re
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from vision import call_vision_json
+from vision import call_vision_json, MOCK
 from redink import load_page, red_pixels
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -27,10 +27,18 @@ as fractions of page width and height. Skip blank areas and printed headers."""
 
 
 # ---------- helpers ----------
+def valid_id(script_id):
+    """Script IDs become folder names, so only allow safe characters (blocks '..' and slashes)."""
+    return isinstance(script_id, str) and re.fullmatch(r"[A-Za-z0-9_-]{1,64}", script_id) is not None
+
+
 def page_files(script_id):
     """Returns {page_number: path} for data/{script_id}/page_NN.*"""
+    folder = DATA / script_id
+    if not folder.is_dir():
+        raise FileNotFoundError(f"No folder for script {script_id}")
     out = {}
-    for p in sorted((DATA / script_id).iterdir()):
+    for p in sorted(folder.iterdir()):
         if p.suffix.lower() in IMG_EXT and p.stem.startswith("page_"):
             try:
                 out[int(p.stem.split("_")[1])] = p
@@ -108,6 +116,8 @@ def run_audit(script_id, force=False):
         return json.loads(cache_file.read_text())
 
     pages = page_files(script_id)
+    if not pages:
+        raise FileNotFoundError(f"Script {script_id} has no page_NN images")
     if 0 in pages:
         cover, all_read = audit_cover(pages[0])
     else:   # no cover sheet in this script: skip the totals check, still audit the answer pages
@@ -135,7 +145,7 @@ def run_audit(script_id, force=False):
     for i, f in enumerate(findings, 1):
         f["id"] = f"f{i}"
         f.setdefault("q", None)
-    out = {"script_id": script_id, "cover": cover,
+    out = {"script_id": script_id, "mock": MOCK, "cover": cover,
            "findings": [{k: f[k] for k in ("id", "type", "severity", "page", "q", "bbox", "confidence", "reason")}
                         for f in findings]}
     cache_file.write_text(json.dumps(out, indent=2))
@@ -144,13 +154,20 @@ def run_audit(script_id, force=False):
 
 def list_scripts():
     rows = []
-    for d in sorted(p for p in DATA.iterdir() if p.is_dir()) if DATA.exists() else []:
-        pages = len(page_files(d.name))
-        risk, n = "unknown", 0
+    if not DATA.exists():
+        return rows
+    for d in sorted(p for p in DATA.iterdir() if p.is_dir() and not p.name.startswith(".") and valid_id(p.name)):
+        nums = sorted(page_files(d.name))
+        risk, n, mock = "unknown", 0, False
         c = CACHE / f"{d.name}.json"
         if c.exists():
-            fs = json.loads(c.read_text())["findings"]
-            n = len(fs)
-            risk = "red" if any(f["type"] == "omission" for f in fs) else ("yellow" if fs else "green")
-        rows.append({"script_id": d.name, "pages": pages, "risk": risk, "n_findings": n})
+            try:
+                cached = json.loads(c.read_text())
+                fs = cached["findings"]
+                n, mock = len(fs), bool(cached.get("mock"))
+                risk = "red" if any(f["type"] == "omission" for f in fs) else ("yellow" if fs else "green")
+            except (json.JSONDecodeError, KeyError):
+                pass      # unreadable cache: show as not audited, it will be rebuilt on open
+        rows.append({"script_id": d.name, "pages": len(nums), "page_numbers": nums,
+                     "risk": risk, "n_findings": n, "mock": mock})
     return rows

@@ -38,12 +38,14 @@ def pr(c):
     r = c["tp"] / (c["tp"] + c["fn"]) if c["tp"] + c["fn"] else 1.0
     return p, r
 
+mock_used = any(run_audit(d.name).get("mock") for d in DATA.iterdir() if d.is_dir() and (d / "truth.json").exists())
 po, ro = pr(om)
 pt, rt = pr(tot)
 lines = ["# Vidya-Audit evaluation", "", f"Scripts evaluated: {n}", "",
          f"- Skipped-answer detection: precision {po:.0%}, recall {ro:.0%} (TP {om['tp']}, FP {om['fp']}, FN {om['fn']})",
          f"- Total-mismatch detection: precision {pt:.0%}, recall {rt:.0%} (TP {tot['tp']}, FP {tot['fp']}, FN {tot['fn']})",
          f"- Cover total re-computed correctly: {total_ok}/{n}", "",
+         *(["", "WARNING: these scores used mock AI answers and do not measure real accuracy."] if mock_used else []),   *(["", "WARNING: these scores used mock AI answers and do not measure real accuracy."] if mock_used else []),
          "| Script | Skipped (truth) | Skipped (found) | Total wrong (truth) | Total wrong (found) |", "|---|---|---|---|---|", *rows]
 (ROOT / "eval").mkdir(exist_ok=True)
 (ROOT / "eval" / "results.md").write_text("\n".join(lines))

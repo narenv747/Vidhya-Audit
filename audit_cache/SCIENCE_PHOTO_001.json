@@ -1,5 +1,6 @@
 {
   "script_id": "SCIENCE_PHOTO_001",
+  "mock": true,
   "cover": {
     "image": null,
     "rows": [],
